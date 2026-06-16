@@ -24,7 +24,7 @@ jobs:
 
       - name: Run dry-run evaluation
         run: |
-          python3 -m slam_evaluator.runner \
+          python3 -m evaluator_core.runner \
             --dataset datasets/kitti_0033.yaml \
             --report-dir tmp_reports \
             --dry-run

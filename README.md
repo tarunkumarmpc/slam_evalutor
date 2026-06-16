@@ -11,7 +11,7 @@ By parsing logs and extracting critical runtime events—such as loop-closure co
 ## Key Capabilities
 
 - **Automated Data Processing**: Captures live estimated trajectories (via `nav_msgs/Path`) during rosbag playback.
-- **Trajectory Alignment & Metrics**: Integrates with `evo` to compute Absolute Pose Error (APE) and Relative Pose Error (RPE), utilizing Sim3 alignment which is essential for monocular SLAM setups.
+- **Trajectory Alignment & Metrics**: Integrates with [`evo`](https://github.com/MichaelGrupp/evo) to compute Absolute Pose Error (APE) and Relative Pose Error (RPE), utilizing Sim3 alignment which is essential for monocular SLAM setups.
 - **Format Interoperability**: Handles necessary format conversions, such as transforming KITTI ground-truth data to TUM format for metric evaluation.
 - **Deep Log Analytics**: Parses SLAM node logs to extract mission-critical events, including tracking states (LOST, WEAK, recovered), VO rejections, and initialization stability.
 - **Comprehensive Reporting**: Automatically generates a timestamped report directory containing a human-readable `report.md`, machine-readable `results.json`, and visualization plots (`trajectory.png`, `error.png`).
@@ -61,7 +61,7 @@ The toolkit is built on a modular Python architecture designed for robustness:
    python3 -m pip install --upgrade pip
    pip install -r src/slam_evaluator/requirements.txt
    ```
-   *Note: `evo` and `matplotlib` are required for full trajectory plotting and metric calculation. If `evo` is unavailable, the pipeline falls back to a reduced summary without plots.*
+   *Note: [`evo`](https://github.com/MichaelGrupp/evo) and `matplotlib` are required for full trajectory plotting and metric calculation. If `evo` is unavailable, the pipeline falls back to a reduced summary without plots.*
 
 5. **Build the package:**
 
