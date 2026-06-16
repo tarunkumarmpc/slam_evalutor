@@ -65,15 +65,21 @@ def main():
     args = parser.parse_args()
 
     # 1. Load config
+    dataset_path = os.path.abspath(args.dataset)
     try:
-        with open(args.dataset, 'r') as f:
+        with open(dataset_path, 'r') as f:
             config = yaml.safe_load(f)
     except Exception as e:
         logger.error(f"Failed to load dataset config: {e}")
         sys.exit(1)
 
     dataset_name = config.get('name', 'unknown_dataset')
+    
+    # Resolve bag_path relative to the yaml file location if it's not absolute
     bag_path = config.get('bag_path')
+    if bag_path and not os.path.isabs(bag_path):
+        bag_path = os.path.join(os.path.dirname(dataset_path), bag_path)
+
     slam_mode = args.mode if args.mode else config.get('slam_mode', 'mono')
     topics = config.get('topics', {})
     slam_topic = topics.get('slam_path', '/slam/path')

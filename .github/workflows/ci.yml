@@ -39,11 +39,7 @@ jobs:
           source /opt/ros/humble/setup.bash
           colcon build --packages-select slam_evaluator
 
-      - name: Generate Test Bag
-        run: |
-          cd $GITHUB_WORKSPACE/datasets
-          source /opt/ros/humble/setup.bash
-          python3 generate_test_bag.py
+
 
       - name: Run full evaluation on test bag
         run: |
