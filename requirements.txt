@@ -1,0 +1,5 @@
+# Requirements for slam_evaluator
+numpy
+PyYAML
+matplotlib
+evo
