@@ -1,0 +1,8 @@
+name: test_bag_dataset
+bag_path: test_bag
+slam_mode: mono
+topics:
+  slam_path: /slam/path
+  gt_path: /slam/gt_path
+launch_args:
+  use_sim_time: true

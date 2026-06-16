@@ -37,18 +37,35 @@ jobs:
           source /opt/ros/humble/setup.bash
           colcon build --packages-select slam_evaluator
 
-      - name: Run dry-run evaluation
+      - name: Generate Test Bag
+        run: |
+          cd $GITHUB_WORKSPACE/datasets
+          source /opt/ros/humble/setup.bash
+          python3 generate_test_bag.py
+
+      - name: Run full evaluation on test bag
         run: |
           cd ~/ros2_ws
           source /opt/ros/humble/setup.bash
           source install/setup.bash
           ros2 launch slam_evaluator evaluate.launch.py \
-            dataset:=$GITHUB_WORKSPACE/datasets/kitti_0033.yaml \
+            dataset:=$GITHUB_WORKSPACE/datasets/test_bag.yaml \
             report_dir:=$GITHUB_WORKSPACE/tmp_reports \
-            dry_run:=true
+            dry_run:=false
 
       - name: Upload report artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dryrun-report
+          name: full-report
           path: tmp_reports
+
+      - name: Prepare results folder
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/results/latest_ci_run
+          cp -r $GITHUB_WORKSPACE/tmp_reports/*/* $GITHUB_WORKSPACE/results/latest_ci_run/
+
+      - name: Commit and Push Results
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update CI evaluation results [skip ci]"
+          file_pattern: "results/latest_ci_run/*"
