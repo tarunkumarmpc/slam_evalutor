@@ -1,71 +1,95 @@
 # slam_evaluator
 
-SLAM performance evaluation pipeline for ROS 2.
+SLAM evaluation toolkit for ROS 2.
 
-Maintainer: Tarun 
-
-Note: This documentation is written from the perspective of an experienced
-SLAM engineer and aims to be pragmatic and unambiguous for robotics teams.
+Maintainer: Tarun — Senior Robotics Engineer
 
 ## Overview
 
-This repository contains a pragmatic SLAM evaluation pipeline designed for
-benchmarking visual SLAM systems in ROS 2. The evaluator performs the
-following steps in a repeatable, scriptable workflow:
+`slam_evaluator` runs controlled dataset playbacks, captures the SLAM
+estimate, computes standard trajectory metrics, extracts runtime diagnostics,
+and produces a compact evaluation report and machine-readable summary for
+benchmarking and troubleshooting.
 
-1. Play a rosbag dataset against the live SLAM system under test.
-2. Capture the estimated trajectory published on `/slam/path`.
-3. Convert KITTI ground-truth poses to TUM format (when applicable).
-4. Compute standard trajectory metrics (APE and RPE) using `evo`.
-5. Parse SLAM runtime logs to extract diagnostic events (VINS init, tracking
-    losses, VO rejects, loop closures, warnings and errors).
-6. Produce a structured Markdown report and a machine-readable JSON file for
-    automated ingestion.
+Capabilities
+-----------
+- Capture estimated trajectory from a `nav_msgs/Path` topic.
+- Convert KITTI ground-truth to TUM format when required.
+- Compute APE and RPE using `evo` with Sim3 alignment for monocular setups.
+- Parse runtime logs for warnings, errors, VO rejects, tracking events, BA
+    activity, loop-closure counts, and VINS initialization diagnostics.
+- Produce `report.md`, `results.json`, and plots (`trajectory.png`,
+    `error.png`) in a timestamped report directory.
 
 ## Requirements
 
-This project requires:
+Requirements
+------------
+- Python 3.8 or later (3.10 recommended).
+- ROS 2 (required for launching SLAM and playing bags).
+- Python packages listed in `requirements.txt`.
 
-- Python 3.8+ (3.10 recommended)
-- ROS 2 (for full evaluation that launches the SLAM system)
-- Python packages listed in `requirements.txt` (install below)
+System/ROS packages must be installed separately; consult the target ROS 2
+distribution documentation for platform-specific instructions.
 
-System packages (for ROS 2) must be installed separately — see your ROS 2
-distribution's installation guide.
-
-Install Python dependencies:
+Install Python dependencies (from repository root):
 
 ```bash
-cd path/to/your/ros2_workspace/src/slam_evaluator
 python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Notes:
-- `evo` is required for full APE/RPE metrics and plotting. If `evo` is not
-    available the evaluator will run a small fallback mode and skip detailed
-    plots.
-- ROS Python packages (for running inside a ROS 2 workspace) are declared in
-    `package.xml` (e.g. `rclpy`, `nav_msgs`, `geometry_msgs`). These are provided
-    by your ROS 2 installation and do not come from PyPI.
+`evo` and `matplotlib` are required for full metrics and plot generation. If
+`evo` is not present the evaluator will produce a reduced summary without
+plots.
 
-## Quick Start
+
+Installation and build
+----------------------
+
+1. Clone the repository (SSH or HTTPS):
 
 ```bash
-# Prepare ROS 2 workspace (if not already built)
+# SSH (recommended for contributors)
+git clone git@github.com:tarunkumarmpc/slam_evalutor.git
+
+# or HTTPS
+git clone https://github.com/tarunkumarmpc/slam_evalutor.git
+```
+
+2. Place the package in a ROS 2 workspace `src/` directory or clone directly
+   inside the workspace.
+
+3. Install ROS package dependencies (recommended):
+
+```bash
+cd <your_ros2_workspace_root>
+rosdep update
+rosdep install --from-paths src --ignore-src -r -y
+```
+
+4. Install Python dependencies:
+
+```bash
+python3 -m pip install --upgrade pip
+pip install -r src/slam_evalutor/requirements.txt
+```
+
+5. Build and source the workspace:
+
+```bash
 cd <your_ros2_workspace_root>
 colcon build --packages-select slam_evaluator
 source install/setup.bash
-
-# Dry run (validates GT conversion + report structure, no SLAM needed)
-ros2 launch slam_evaluator evaluate.launch.py dry_run:=true
-
-# Full evaluation (plays the rosbag and runs your SLAM system)
-ros2 launch slam_evaluator evaluate.launch.py \
-    dataset:=datasets/kitti_0033.yaml \
-    mode:=mono \
-    report_dir:=./reports
 ```
+
+Verification (dry run):
+
+```bash
+ros2 launch slam_evaluator evaluate.launch.py dry_run:=true
+```
+
+If the dry run completes the package is ready for full evaluations.
 
 ## Output (per run)
 
@@ -88,55 +112,45 @@ These plots require `evo` and `matplotlib` to be installed. If plotting
 fails the report generator will continue and print a warning; the JSON
 results are still written when possible.
 
+
 ## Custom SLAM integration
 
-The evaluator is designed to run against any visual SLAM system that publishes
-an estimated trajectory as a `nav_msgs/Path` message. To integrate your custom
-SLAM implementation:
+Configure the dataset YAML to match the SLAM under test. The evaluator expects
+the SLAM to publish an estimated trajectory as a `nav_msgs/Path` topic.
 
-- Ensure your SLAM publishes the estimated trajectory on a topic (default
-    `/slam/path`).
-- In your dataset YAML (under `topics`) set `slam_path` to the topic your
-    system uses. Example keys supported by the dataset config: `image`,
-    `slam_path`, `gt_path`, `gps`, `imu`.
-- If your SLAM requires specific launch arguments, pass them through the
-    dataset `launch_args` map — these are forwarded to the SLAM launch command.
+Relevant dataset keys:
 
-Example dataset YAML snippet:
+- `bag_path`: path to the rosbag used for playback.
+- `slam_mode`: e.g., `mono`, `mono_imu`, `stereo`.
+- `topics`: map of topic names (`slam_path`, `image`, `gt_path`, `gps`, `imu`).
+- `launch_args`: additional launch arguments forwarded to the SLAM launch.
+
+Sample dataset configuration:
 
 ```yaml
 name: my_dataset
 bag_path: /path/to/bag
 slam_mode: mono
 topics:
-    slam_path: /my_slam/pose_path
-    image: /camera/image_raw
+  slam_path: /my_slam/pose_path
+  image: /camera/image_raw
 launch_args:
-    use_sim_time: true
+  use_sim_time: true
 ```
 
 ## Monitoring and diagnostics
 
-The evaluator captures SLAM stdout/stderr to `run.log` and extracts
-diagnostic information (counts and short-message lists) during report
-generation. The following are monitored and reported:
+During a run the evaluator captures stdout/stderr to `run.log` and extracts
+structured diagnostics for the report. Extracted items include:
 
-- Warnings and errors (unique messages are listed in the report)
-- VO rejection reasons and counts
-- Tracking events (LOST, WEAK, recovered)
-- Local BA runs and skips
-- VINS initialization status and scale diagnostics
+- Unique warnings and errors.
+- VO rejection counts and reason breakdown.
+- Tracking events: LOST, WEAK, recovered.
+- Local BA runs and skips.
+- VINS initialization and scale diagnostics.
 
-To ensure diagnostics are captured:
-
-- Run your SLAM with console logging enabled (INFO/WARN/ERROR). The parser
-    relies on textual log lines; different SLAMs may require small adjustments
-    to the parsing rules in `slam_evaluator/log_parser.py`.
-- If your SLAM uses non-standard log prefixes, adjust `log_parser._strip_ros_prefix`
-    or add regexes to capture your messages.
-
-The generated `report.md` and `results.json` include summaries and counts of
-these events; `run.log` contains the full output for detailed offline analysis.
+If your SLAM uses non-standard logging, extend `slam_evaluator/log_parser.py`
+to match implementation-specific messages.
 
 ## Adding a New Dataset
 
