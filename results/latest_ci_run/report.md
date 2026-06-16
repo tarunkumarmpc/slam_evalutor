@@ -4,33 +4,33 @@
 |---|---|
 | Dataset | `test_bag_dataset` |
 | SLAM Mode | `mono` |
-| Run Date | 20260616_143852 |
+| Run Date | 20260616_144714 |
 
 ## Summary
 
 | Metric | Value |
 |---|---|
-| **APE RMSE** | **0.0000 m** |
-| APE mean | 0.0000 m |
-| APE std | 0.0000 m |
-| APE max | 0.0000 m |
-| **RPE RMSE (Δ=1 frame)** | **0.0000 m** |
-| GT trajectory length | 0.00 m |
-| Estimated poses | 0 |
-| Associated poses | 0 |
-| **Drift (APE RMSE / traj length)** | **0.00 %** |
+| **APE RMSE** | **0.1465 m** |
+| APE mean | 0.1336 m |
+| APE std | 0.0602 m |
+| APE max | 0.3056 m |
+| **RPE RMSE (Δ=1 frame)** | **0.2098 m** |
+| GT trajectory length | 37.08 m |
+| Estimated poses | 300 |
+| Associated poses | 300 |
+| **Drift (APE RMSE / traj length)** | **0.40 %** |
 
 ## Absolute Pose Error (APE — translation)
 
 | Stat | Value (m) |
 |---|---|
-| rmse | 0.0000 |
-| mean | 0.0000 |
-| std | 0.0000 |
-| min | 0.0000 |
-| max | 0.0000 |
-| sse | 0.0000 |
-| n_poses | 0 |
+| rmse | 0.1465 |
+| mean | 0.1336 |
+| std | 0.0602 |
+| min | 0.0217 |
+| max | 0.3056 |
+| sse | 6.4414 |
+| n_poses | 300 |
 
 ## Relative Pose Error (RPE — translation)
 
@@ -38,10 +38,37 @@
 
 | Stat | Value (m) |
 |---|---|
-| rmse | 0.0000 |
-| mean | 0.0000 |
-| std | 0.0000 |
-| max | 0.0000 |
+| rmse | 0.2098 |
+| mean | 0.1918 |
+| std | 0.0849 |
+| max | 0.5745 |
+
+### Δ=100 frames (medium-range drift)
+
+| Stat | Value (m) |
+|---|---|
+| rmse | 0.1159 |
+| mean | 0.1149 |
+| std | 0.0151 |
+| max | 0.1300 |
+
+## Trajectory Alignment (Sim3)
+
+The estimated trajectory was aligned to the ground truth using Umeyama Sim3 alignment:
+
+- **Scale ($s$)**: `0.995906`
+
+**Rotation Matrix ($R$)**:
+```text
+[  1.00000,   0.00297,  -0.00011]
+[ -0.00297,   0.99999,  -0.00135]
+[  0.00011,   0.00135,   1.00000]
+```
+
+**Translation Vector ($t$)**:
+```text
+[  0.00374,  -0.00569,  -0.00644]^T
+```
 
 ## System Behaviour (from logs)
 
@@ -74,12 +101,18 @@
 {
   "dataset": "test_bag_dataset",
   "slam_mode": "mono",
-  "ape_rmse_m": null,
-  "rpe1_rmse_m": null,
-  "traj_length_m": null,
+  "ape_rmse_m": 0.14653089504523636,
+  "rpe1_rmse_m": 0.20977531554982892,
+  "traj_length_m": 37.07906727265899,
   "keyframes": 0,
   "vo_rejects_total": 0,
   "tracking_lost": 0,
   "loop_closures": 0
 }
 ```
+
+## Visualizations
+
+![Trajectory](./trajectory.png)
+
+![APE Over Time](./error.png)

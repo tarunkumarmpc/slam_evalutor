@@ -1,9 +1,9 @@
 {
   "dataset": "test_bag_dataset",
   "slam_mode": "mono",
-  "ape_rmse_m": null,
-  "rpe1_rmse_m": null,
-  "traj_length_m": null,
+  "ape_rmse_m": 0.14653089504523636,
+  "rpe1_rmse_m": 0.20977531554982892,
+  "traj_length_m": 37.07906727265899,
   "keyframes": 0,
   "vo_rejects_total": 0,
   "tracking_lost": 0,
