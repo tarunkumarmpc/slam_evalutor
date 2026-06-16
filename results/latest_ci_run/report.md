@@ -4,7 +4,7 @@
 |---|---|
 | Dataset | `test_bag_dataset` |
 | SLAM Mode | `mono` |
-| Run Date | 20260616_142744 |
+| Run Date | 20260616_143852 |
 
 ## Summary
 
