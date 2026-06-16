@@ -11,10 +11,10 @@ By parsing logs and extracting critical runtime events—such as loop-closure co
 ## Key Capabilities
 
 - **Automated Data Processing**: Captures live estimated trajectories (via `nav_msgs/Path`) during rosbag playback.
-- **Trajectory Alignment & Metrics**: Integrates with [`evo`](https://github.com/MichaelGrupp/evo) to compute Absolute Pose Error (APE) and Relative Pose Error (RPE), utilizing Sim3 alignment which is essential for monocular SLAM setups.
+- **Trajectory Alignment & Metrics**: Integrates with [`evo`](https://github.com/MichaelGrupp/evo) to compute Absolute Pose Error (APE) and Relative Pose Error (RPE), utilizing Sim3 alignment.
 - **Format Interoperability**: Handles necessary format conversions, such as transforming KITTI ground-truth data to TUM format for metric evaluation.
-- **Deep Log Analytics**: Parses SLAM node logs to extract mission-critical events, including tracking states (LOST, WEAK, recovered), VO rejections, and initialization stability.
-- **Comprehensive Reporting**: Automatically generates a timestamped report directory containing a human-readable `report.md`, machine-readable `results.json`, and visualization plots (`trajectory.png`, `error.png`).
+- **Deep Log Analytics**: Parses SLAM node logs to extract mission-critical events, including tracking states (LOST, WEAK, recovered), VO rejections, and initialization stability.[made for my custom slam setup) ]
+- **Comprehensive Reporting**: Automatically generates a timestamped report directory containing a `report.md`, `results.json`, and visualization plots (`trajectory.png`, `error.png`).
 
 ## Architecture
 
@@ -61,6 +61,7 @@ The toolkit is built on a modular Python architecture designed for robustness:
    python3 -m pip install --upgrade pip
    pip install -r src/slam_evaluator/requirements.txt
    ```
+
    *Note: [`evo`](https://github.com/MichaelGrupp/evo) and `matplotlib` are required for full trajectory plotting and metric calculation. If `evo` is unavailable, the pipeline falls back to a reduced summary without plots.*
 
 5. **Build the package:**
@@ -76,6 +77,7 @@ The toolkit is built on a modular Python architecture designed for robustness:
    ```bash
    ros2 launch slam_evaluator evaluate.launch.py dry_run:=true
    ```
+
    If the dry run completes successfully, the pipeline is ready for deployment.
 
 ## Pipeline Output
@@ -89,6 +91,7 @@ For each evaluation run, a timestamped directory is created (e.g., `reports/kitt
 - `run.log`: Raw stdout/stderr from the SLAM node for deeper debugging.
 
 If `evo` and `matplotlib` are installed, the toolkit also produces:
+
 - `trajectory.png`: Sim3-aligned XY trajectory overlay (Ground Truth vs. Estimate).
 - `error.png`: Absolute pose translation error over time.
 
@@ -97,12 +100,14 @@ If `evo` and `matplotlib` are installed, the toolkit also produces:
 To integrate a custom SLAM system, define a dataset YAML configuration that matches your setup. The evaluator expects the SLAM node to publish its estimated path to a `nav_msgs/Path` topic.
 
 **Configuration Keys:**
+
 - `bag_path`: Absolute path to the rosbag.
 - `slam_mode`: Sensor configuration (e.g., `mono`, `mono_imu`, `stereo`).
 - `topics`: Remapping for essential topics (`slam_path`, `image`, `gt_path`, `gps`, `imu`).
 - `launch_args`: Additional arguments forwarded to the SLAM launch file.
 
 **Example `datasets/my_dataset.yaml`:**
+
 ```yaml
 name: my_custom_dataset
 bag_path: /data/rosbags/my_bag.db3
@@ -126,7 +131,8 @@ gt_times_path: /data/gt/times.txt   # Timestamps (seconds)
 slam_mode: mono
 ```
 
-2. Launch the evaluation:
+1. Launch the evaluation:
+
 ```bash
 ros2 launch slam_evaluator evaluate.launch.py dataset:=datasets/sequence_00.yaml
 ```
