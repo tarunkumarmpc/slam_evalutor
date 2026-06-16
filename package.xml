@@ -3,11 +3,9 @@
 <package format="3">
   <name>slam_evaluator</name>
   <version>0.1.0</version>
-  <description>SLAM performance evaluation pipeline: runs the system against a dataset,
-  computes APE/RPE trajectory metrics, parses system logs, and generates a structured
-  report (Markdown + JSON) suitable for human review and automated processing.</description>
+  <description>A robust SLAM evaluation and validation toolkit for ROS 2. Automates dataset playback, trajectory capture, APE/RPE metric computation via evo, and deep log diagnostics for actionable algorithmic insights.</description>
 
-  <maintainer email="tarunmpc@gmail.com">tarun</maintainer>
+  <maintainer email="tarunmpc@gmail.com">Tarun</maintainer>
   <license>MIT</license>
 
   <depend>rclpy</depend>

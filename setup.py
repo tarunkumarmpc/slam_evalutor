@@ -22,13 +22,13 @@ setup(
         'evo',
     ],
     zip_safe=True,
-    maintainer='tarun',
-    maintainer_email='tarun@example.com',
-    description='SLAM evaluation pipeline for trajectory metrics and log analysis.',
+    maintainer='Tarun',
+    maintainer_email='tarunmpc@gmail.com',
+    description='A robust SLAM evaluation and validation toolkit for ROS 2.',
     license='MIT',
     entry_points={
         'console_scripts': [
-            'run_evaluation = slam_evaluator.runner:main',
+            'run_evaluation = evaluator_core.runner:main',
         ],
     },
 )

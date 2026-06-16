@@ -1,0 +1,33 @@
+# Dataset config for KITTI 2011_09_30_drive_0033 (= odometry sequence 09)
+# ============================================================
+
+name: kitti_2011_09_30_drive_0033
+
+# ---------- Bag ----------
+bag_path: /home/tarun/Music/kiti/kitti_bag_ws/2011_09_30_drive_0033_sync/2011_09_30/2011_09_30_drive_0033_sync_bag
+
+
+
+# ---------- SLAM mode & playback ----------
+slam_mode: mono          # mono | mono_imu | mono_imu_wheel
+play_rate: 1.0           # 2x speed → ~85s total run time (bag is 165s)
+# play_duration_sec: 60  # uncomment to evaluate only the first N seconds
+
+# ---------- ROS Topics ----------
+topics:
+  image:     /kitti/camera/gray/left/image_raw
+  slam_path: /slam/path                   # nav_msgs/Path published by graph_slam
+  gt_path:   /slam/gt_path                # nav_msgs/Path published by gps_visualizer_node
+
+# ---------- SLAM launch args ----------
+launch_args:
+  publish_static_tf: "true"
+  tf_parent_frame: base_link
+  tf_child_frame: cam0_link
+
+  tf_x: "-0.08"
+  tf_y: "0.0"
+  tf_z: "-0.035"
+  tf_roll: "-1.57079632679"
+  tf_pitch: "0.0"
+  tf_yaw: "-1.57079632679"
