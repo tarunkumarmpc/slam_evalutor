@@ -1,5 +1,5 @@
 # Requirements for slam_evaluator
-numpy
+numpy<1.25.0
 PyYAML
 matplotlib
 evo
